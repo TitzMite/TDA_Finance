@@ -3,13 +3,16 @@ Overview
 
 This repository contains an educational notebook exploring how Topological Data Analysis (TDA) can be applied to financial market data.
 
-The project studies rolling windows of daily stock returns. Each trading day is represented as a point in a high-dimensional space whose coordinates are the returns of the selected stocks. Persistent homology is then used to describe the geometry and topology of the resulting point clouds.
+The project studies rolling windows of daily stock returns. Each trading day is represented as a point in a high-dimensional space whose coordinates are the returns of the selected stocks. These rolling windows therefore form point clouds whose geometry changes over time.
+
+Persistent homology is used to extract topological features from these point clouds. The resulting TDA-based measures are then compared with classical market indicators, in particular stock volatility and average correlation.
 
 The main question is:
 
-Can topological features of financial return data reveal information that differs from classical market measures such as volatility and average stock correlation?
+    How do topological features of stock-return data change over time, and how are they related to conventional measures of market behavior?
 
-This project is primarily intended for educational and exploratory purposes. It is not designed as a production trading system, investment model, or validated financial forecasting tool.
+The goal is not to establish a new financial market indicator, but to explore what information persistent homology captures and how it differs from more traditional statistical measures.
+
 
 
 Method
