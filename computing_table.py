@@ -163,7 +163,7 @@ analysis_table["average_correlation"] = [
     for point_cloud in analysis_table["point_cloud"]
 ]
 
-analysis_table.to_pickle("analysis_table.pkl")
+analysis_table.to_pickle("analysis_table.pkl.gz", compression="gzip")
 
 #
 
