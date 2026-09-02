@@ -1,99 +1,216 @@
-Overview
---------
+# Topological Analysis of Financial Market Stress
 
-This repository contains an educational notebook exploring how Topological Data Analysis (TDA) can be applied to financial market data.
+This project provides an educational introduction to applying **Topological Data Analysis (TDA)** to financial time-series data.
 
-The project studies rolling windows of daily stock returns. Each trading day is represented as a point in a high-dimensional space whose coordinates are the returns of the selected stocks. These rolling windows therefore form point clouds whose geometry changes over time.
+Daily returns of 24 large German stocks are grouped into rolling 100-day windows and interpreted as point clouds in $\mathbb{R}^{24}$. Persistent homology is then used to study topological features in dimensions $H_1$ and $H_2$.
 
-Persistent homology is used to extract topological features from these point clouds. The resulting TDA-based measures are then compared with classical market indicators, in particular stock volatility and average correlation.
+The resulting persistence diagrams are analyzed in both raw and normalized form and compared with two classical measures of market stress:
 
-The main question is:
+- average stock volatility;
+- average pairwise stock correlation.
 
-    How do topological features of stock-return data change over time, and how are they related to conventional measures of market behavior?
+Persistence diagrams are also transformed into heatmaps and used as inputs to simple convolutional neural networks.
 
-The goal is not to establish a new financial market indicator, but to explore what information persistent homology captures and how it differs from more traditional statistical measures.
+The project is intended for **educational and exploratory purposes**. It does not aim to develop a trading strategy or establish TDA as a superior measure of financial market stress.
 
+## Workflow
 
+The main analysis follows the pipeline:
 
-Method
-------
+```text
+stock prices
+    ↓
+daily returns
+    ↓
+rolling 100-day windows
+    ↓
+24-dimensional point clouds
+    ↓
+persistent homology
+    ↓
+H1 and H2 persistence diagrams
+    ↓
+raw and normalized representations
+    ↓
+TDA stress measures and persistence heatmaps
+    ↓
+statistical and machine-learning analysis
+```
 
-For each rolling window of 100 trading days:
+## Data
 
-1. Daily stock returns are collected into a point cloud.
-2. Persistent homology is computed using a Vietoris-Rips filtration.
-3. H1 and H2 persistence diagrams are extracted.
-4. Each persistence diagram is summarized by an L2 persistence score:
+Historical daily stock prices are downloaded using `yfinance`.
 
-   S_raw = sqrt(sum_i p_i^2),
+The dataset contains 24 large German companies and covers the period from January 2005 to June 2026.
 
-   where p_i is the persistence of a topological feature.
+For each trading day, the percentage returns of the 24 stocks form a point in $\mathbb{R}^{24}$. Rolling windows of 100 trading days therefore produce point clouds containing 100 points each.
 
-5. A normalized TDA stress measure is also computed by dividing the raw score by the median pairwise Euclidean distance of the point cloud.
+## Persistent Homology
 
-   This reduces the influence of the overall geometric scale of the market return cloud.
+Persistent homology is calculated for every rolling point cloud using `ripser`.
 
+Two homology dimensions are considered:
 
-Classical Market Measures
--------------------------
+- $H_1$: one-dimensional features such as loops;
+- $H_2$: two-dimensional features such as cavities.
 
-The TDA measures are compared with two conventional indicators.
+Each feature has a birth value $b_i$ and a death value $d_i$. Its persistence is
 
-Average stock volatility:
-For every stock, the sample standard deviation of its returns is computed within the rolling window. These individual volatilities are then averaged.
+$$
+p_i = d_i - b_i.
+$$
 
-Average stock correlation:
-The Pearson correlation is computed for every distinct pair of stocks within the rolling window. The pairwise correlations are then averaged.
+In this project, persistence-diagram points are represented as
 
+$$
+(b_i,p_i).
+$$
 
-Visualization
--------------
+## Normalized Persistence Diagrams
 
-For visualization, all time series can be standardized using z-scores so that measures with different numerical scales can be compared on the same plot.
+The geometric scale of the point clouds can vary over time. To reduce this scale effect, each persistence diagram is normalized by the median pairwise Euclidean distance of its corresponding point cloud.
 
-The interactive Plotly visualization contains:
+For a point cloud $X$,
 
-- H1 raw stress
-- H1 normalized stress
-- H2 raw stress
-- H2 normalized stress
-- average stock volatility
-- average stock correlation
+$$
+D_{\text{median}}
+=
+\operatorname{median}_{i<j}
+\|\mathbf{x}_i-\mathbf{x}_j\|_2.
+$$
 
-Individual curves can be shown or hidden interactively.
+Each persistence point is transformed as
 
+$$
+(b_i,p_i)
+\rightarrow
+\left(
+\frac{b_i}{D_{\text{median}}},
+\frac{p_i}{D_{\text{median}}}
+\right).
+$$
 
-Correlation Analysis
---------------------
+Both raw and normalized persistence diagrams are retained in the analysis.
 
-Pearson and Spearman correlations are used to compare the TDA-based measures with the classical indicators.
+## TDA Stress Measures
 
-Current observations include:
+A simple scalar TDA stress measure is constructed using the $L^2$ norm of the persistence values:
 
-- Raw H1 stress has a substantial positive relationship with volatility.
-  Pearson correlation: approximately 0.61
-  Spearman correlation: approximately 0.57
+$$
+S =
+\sqrt{
+\sum_i p_i^2
+}.
+$$
 
-- After normalization, the relationship between H1 stress and volatility becomes weak.
-  Pearson correlation: approximately -0.25
-  Spearman correlation: approximately -0.09
+Four TDA-based stress measures are considered:
 
-- H2-based measures show only weak correlations with volatility.
+- $H_1$ raw stress;
+- $H_1$ normalized stress;
+- $H_2$ raw stress;
+- $H_2$ normalized stress.
 
-- None of the TDA measures currently shows a strong relationship with average stock correlation.
+These are compared with average stock volatility and average pairwise stock correlation.
 
-These results should not be interpreted as evidence of a new market-stress indicator. The clearest current finding is methodological: raw persistence is strongly affected by the overall scale of the return point cloud, while normalization removes much of this dependence.
+For visual comparison, the time series are standardized so that measures with different numerical scales can be displayed together. The correlation analysis itself uses the original, unstandardized values.
 
-The normalized TDA measures therefore appear to describe aspects of market geometry that are different from simple volatility and average correlation, but the present analysis does not establish that these differences have predictive or economic value.
+## Persistence Heatmaps
 
-Disclaimer
-----------
+Persistence diagrams are also transformed into continuous two-dimensional heatmaps.
 
-This repository is an educational data-analysis project.
+Each persistence point contributes a Gaussian-shaped region centered at its birth-persistence coordinates. More persistent features receive a larger weight.
 
-It is not financial advice and should not be used for investment decisions. The methods, data preparation, statistical comparisons, and possible machine-learning experiments are exploratory rather than production-grade.
+Heatmaps are constructed for:
 
-AI Assistance
--------------
+- $H_1$ raw persistence diagrams;
+- $H_1$ normalized persistence diagrams;
+- $H_2$ raw persistence diagrams;
+- $H_2$ normalized persistence diagrams.
 
-ChatGPT was used as an assistant during the development of this project, including discussions of methodology, Python implementation, visualization, and documentation. The mathematical choices, experiments, interpretation of results, and final project structure were reviewed and developed by the author.
+A common birth-persistence region is used for all windows of the same heatmap type, making the heatmaps comparable over time.
+
+## CNN Analysis
+
+The persistence heatmaps are treated as single-channel images and used as inputs to convolutional neural networks.
+
+The four heatmap types are each compared with two target variables:
+
+- average stock volatility;
+- average stock correlation.
+
+This results in a total of **eight CNN experiments**.
+
+The observations are divided chronologically into training, validation, and test periods. A gap of 100 trading days is placed between these periods to reduce overlap between the rolling windows.
+
+The CNN analysis is not intended as a forecasting exercise. The target variables describe the same 100-day windows as the corresponding persistence heatmaps.
+
+## Results
+
+The strongest statistical relationship is found between **raw $H_1$ stress and volatility**, with a Pearson correlation of approximately $0.61$ and a Spearman correlation of approximately $0.57$.
+
+After normalization, this relationship becomes substantially weaker. This suggests that part of the relationship between raw $H_1$ persistence and volatility is associated with the geometric scale of the return point cloud.
+
+The relationships between the TDA stress measures and average stock correlation are generally weak.
+
+The CNN results are mixed. Some $H_1$ and raw $H_2$ heatmaps show moderate relationships with volatility, but all eight CNN models produce negative $R^2$ values on the test set. The machine-learning results should therefore be interpreted as **exploratory rather than predictive**.
+
+## Project Structure
+
+```text
+.
+├── computing_table.py   # Builds the analysis table
+├── backend.py           # Plotting and machine-learning helper functions
+├── tda_finance.ipynb    # Main analysis and explanation
+└── README.md
+```
+
+## Requirements
+
+The main Python packages used in the project are:
+
+```text
+numpy
+pandas
+scipy
+yfinance
+ripser
+matplotlib
+tensorflow
+scikit-learn
+```
+
+They can be installed with:
+
+```bash
+pip install numpy pandas scipy yfinance ripser matplotlib tensorflow scikit-learn
+```
+
+## Running the Project
+
+Before opening the notebook, run:
+
+```bash
+python computing_table.py
+```
+
+This creates the `analysis_table` used by `backend.py` and the notebook.
+
+Then start Jupyter:
+
+```bash
+jupyter notebook
+```
+
+Open `tda_finance.ipynb` and run the notebook cells in order.
+
+## AI Assistance
+
+This project was developed with assistance from **ChatGPT by OpenAI**.
+
+ChatGPT was used to help review the project structure, improve explanations and documentation, refine code organization, and discuss the interpretation and presentation of the results.
+
+## Disclaimer
+
+This project is intended for **educational and exploratory purposes only**.
+
+The TDA-based measures and neural-network experiments presented here should not be interpreted as validated financial indicators, forecasting models, trading signals, or investment advice.
