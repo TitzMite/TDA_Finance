@@ -72,8 +72,6 @@ The geometric scale of the point clouds can vary over time. To reduce this scale
 
 For a point cloud $X$, the median pairwise Euclidean distance is
 
-For a point cloud $X$, the median pairwise Euclidean distance is
-
 $$D_{\mathrm{median}} = \mathrm{median}_{i<j} \|\mathbf{x}_i-\mathbf{x}_j\|_2.$$
 
 Each persistence point is transformed as
