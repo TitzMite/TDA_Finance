@@ -72,8 +72,7 @@ The geometric scale of the point clouds can vary over time. To reduce this scale
 
 For a point cloud $X$,
 
-$$
-D_{\text{median}}
+$$ D_{\text{median}}
 =
 \operatorname{median}_{i<j}
 \|\mathbf{x}_i-\mathbf{x}_j\|_2.
