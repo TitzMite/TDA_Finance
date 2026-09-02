@@ -151,28 +151,6 @@ The CNN results are mixed. Some $H_1$ and raw $H_2$ heatmaps show moderate relat
 ├── tda_finance.ipynb    # Main analysis and explanation
 └── README.md
 ```
-
-## Requirements
-
-The main Python packages used in the project are:
-
-```text
-numpy
-pandas
-scipy
-yfinance
-ripser
-matplotlib
-tensorflow
-scikit-learn
-```
-
-They can be installed with:
-
-```bash
-pip install numpy pandas scipy yfinance ripser matplotlib tensorflow scikit-learn
-```
-
 ## Running the Project
 
 Before opening the notebook, run:
