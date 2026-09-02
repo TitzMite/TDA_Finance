@@ -70,12 +70,15 @@ $$
 
 The geometric scale of the point clouds can vary over time. To reduce this scale effect, each persistence diagram is normalized by the median pairwise Euclidean distance of its corresponding point cloud.
 
-For a point cloud $X$,
+For a point cloud $X$, the median pairwise Euclidean distance is
 
-$$ D_{\text{median}}
+$$
+D_{\mathrm{median}}
 =
 \operatorname{median}_{i<j}
-\|\mathbf{x}_i-\mathbf{x}_j\|_2.
+\left\|
+\mathbf{x}_i-\mathbf{x}_j
+\right\|_2.
 $$
 
 Each persistence point is transformed as
@@ -84,8 +87,8 @@ $$
 (b_i,p_i)
 \rightarrow
 \left(
-\frac{b_i}{D_{\text{median}}},
-\frac{p_i}{D_{\text{median}}}
+\frac{b_i}{D_{\mathrm{median}}},
+\frac{p_i}{D_{\mathrm{median}}}
 \right).
 $$
 
